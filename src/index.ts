@@ -9,6 +9,7 @@ import {
 } from "graphql";
 
 export type ParsedVariables = Record<string, unknown>;
+export type OperationType = "query" | "mutation";
 
 export type QueryDefinitionValue = true | QueryDefinition;
 
@@ -19,6 +20,7 @@ export interface QueryDefinition {
 export interface ParsedResult {
   operation: {
     name: string;
+    type: OperationType;
     definition: QueryDefinition;
     variable: ParsedVariables;
   };
@@ -65,10 +67,23 @@ export function parseOperation(
   return {
     operation: {
       name: operation.name?.value ?? "AnonymousOperation",
+      type: normalizeOperationType(operation.operation),
       definition: selectionSetToObject(operation.selectionSet, fragments),
       variable: variables
     }
   };
+}
+
+function normalizeOperationType(
+  operationType: OperationDefinitionNode["operation"]
+): OperationType {
+  if (operationType === "query" || operationType === "mutation") {
+    return operationType;
+  }
+
+  throw new Error(
+    `Unsupported operation type: ${operationType}. Only query and mutation are supported.`
+  );
 }
 
 function getFragmentMap(

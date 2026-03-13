@@ -26,10 +26,17 @@ function parseOperation(query, variables = {}) {
     return {
         operation: {
             name: operation.name?.value ?? "AnonymousOperation",
+            type: normalizeOperationType(operation.operation),
             definition: selectionSetToObject(operation.selectionSet, fragments),
             variable: variables
         }
     };
+}
+function normalizeOperationType(operationType) {
+    if (operationType === "query" || operationType === "mutation") {
+        return operationType;
+    }
+    throw new Error(`Unsupported operation type: ${operationType}. Only query and mutation are supported.`);
 }
 function getFragmentMap(definitions) {
     const fragmentMap = {};

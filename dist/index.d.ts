@@ -1,4 +1,5 @@
 export type ParsedVariables = Record<string, unknown>;
+export type OperationType = "query" | "mutation";
 export type QueryDefinitionValue = true | QueryDefinition;
 export interface QueryDefinition {
     [field: string]: QueryDefinitionValue;
@@ -6,6 +7,7 @@ export interface QueryDefinition {
 export interface ParsedResult {
     operation: {
         name: string;
+        type: OperationType;
         definition: QueryDefinition;
         variable: ParsedVariables;
     };

@@ -20,6 +20,7 @@ yarn add https://github.com/connectingmatrix/graphql-parser.git
 {
   operation: {
     name: "[OPERATION NAME]",
+    type: "query | mutation",
     definition: { /* query converted into object */ },
     variable: { /* variables object */ }
   }
