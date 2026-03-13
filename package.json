@@ -1,0 +1,31 @@
+{
+  "name": "@connectingmatrix/graphql-parser",
+  "version": "1.0.0",
+  "description": "Simple TypeScript GraphQL parsing helpers",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "graphql",
+    "parser",
+    "typescript"
+  ],
+  "author": "connectingmatrix",
+  "license": "MIT",
+  "dependencies": {
+    "graphql": "^16.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.13",
+    "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
