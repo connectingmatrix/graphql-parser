@@ -52,7 +52,11 @@ console.log(merged.sdl);
 }
 ```
 
-`parseJSON` returns `null` when payload JSON is invalid or missing `query`.
+`parseJSON` accepts both:
+- JSON payload (`{ query, variables }`) as object or JSON string
+- Raw GraphQL query string (for example `"mutation AuthLogin(...) { ... }"`)
+
+It returns `null` when parsing fails or input is invalid.
 
 ## Default resolution when no files are passed
 

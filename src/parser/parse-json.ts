@@ -2,21 +2,52 @@ import { parseOperation } from "./parse-operation";
 import { GraphQLJSONPayload, ParsedResult } from "./types";
 
 export function parseJSON(payload: string | GraphQLJSONPayload): ParsedResult | null {
-  let parsedPayload: GraphQLJSONPayload;
-
   if (typeof payload === "string") {
-    try {
-      parsedPayload = JSON.parse(payload) as GraphQLJSONPayload;
-    } catch {
+    const input = payload.trim();
+    if (!input) {
       return null;
     }
-  } else {
-    parsedPayload = payload;
-  }
 
-  if (!parsedPayload || typeof parsedPayload.query !== "string") {
+    try {
+      const maybeJSON = JSON.parse(input) as unknown;
+
+      if (typeof maybeJSON === "string") {
+        return safeParseOperation(maybeJSON, {});
+      }
+
+      if (isGraphQLPayload(maybeJSON)) {
+        return safeParseOperation(maybeJSON.query, maybeJSON.variables ?? {});
+      }
+    } catch {
+      return safeParseOperation(input, {});
+    }
+
     return null;
   }
 
-  return parseOperation(parsedPayload.query, parsedPayload.variables ?? {});
+  if (!isGraphQLPayload(payload)) {
+    return null;
+  }
+
+  return safeParseOperation(payload.query, payload.variables ?? {});
+}
+
+function isGraphQLPayload(value: unknown): value is GraphQLJSONPayload {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as { query?: unknown };
+  return typeof candidate.query === "string";
+}
+
+function safeParseOperation(
+  query: string,
+  variables: GraphQLJSONPayload["variables"]
+): ParsedResult | null {
+  try {
+    return parseOperation(query, variables ?? {});
+  } catch {
+    return null;
+  }
 }
