@@ -1,6 +1,6 @@
 # @connectingmatrix/graphql-parser
 
-Simple TypeScript module for converting GraphQL queries into a plain object shape.
+TypeScript module for loading and merging GraphQL SDL files.
 
 ## Install from Git (HTTP)
 
@@ -8,38 +8,37 @@ Simple TypeScript module for converting GraphQL queries into a plain object shap
 yarn add https://github.com/connectingmatrix/graphql-parser.git
 ```
 
-## Exported functions
+## Exported function
 
-- `parseQuery(query: string)`
-- `parseJSON(payload: string | { query: string; variables?: object })`
-- `parseOperation(query: string, variables?: object)`
+- `loadSchemaSDL(...schemaFiles: string[])`
 
 ## Output format
 
 ```ts
 {
-  operation: {
-    name: "[OPERATION NAME]",
-    type: "query | mutation",
-    definition: { /* query converted into object */ },
-    variable: { /* variables object */ }
-  }
+  cacheKey: "[path:mtime|path:mtime|...]",
+  sdl: "[merged schema SDL]"
 }
 ```
 
 ## Example
 
 ```ts
-import { parseJSON } from "@connectingmatrix/graphql-parser";
+import { loadSchemaSDL } from "@connectingmatrix/graphql-parser";
 
-const payload = {
-  query:
-    "query ChatContext($chatId: UUID!) { ai_chat_sessionsXsubjectXpostsCollection { edges { node { chat_session_id subject_id post_id } } } }",
-  variables: {
-    chatId: "3dc0c39c-cc72-433a-b03e-a67d2e43eacf"
-  }
-};
-
-const parsed = parseJSON(payload);
-console.log(parsed);
+const merged = loadSchemaSDL("./schema.graphql", "./schema-extended.graphql", "./extra.graphql");
+console.log(merged.cacheKey);
+console.log(merged.sdl);
 ```
+
+## Default resolution when no files are passed
+
+When called as `loadSchemaSDL()` with no arguments, it tries:
+
+1. Base schema:
+   - `GRAPHQL_SCHEMA_PATH`
+   - `./schema.graphql`
+2. Extended schema:
+   - `GRAPHQL_SCHEMA_EXTENDED_PATH`
+   - `schema-extended.graphql` next to the base schema
+   - `./schema-extended.graphql`

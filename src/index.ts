@@ -1,169 +1,84 @@
-import {
-  DefinitionNode,
-  DocumentNode,
-  FragmentDefinitionNode,
-  OperationDefinitionNode,
-  SelectionNode,
-  SelectionSetNode,
-  parse
-} from "graphql";
+import fs from "node:fs";
+import path from "node:path";
 
-export type ParsedVariables = Record<string, unknown>;
-export type OperationType = "query" | "mutation";
-
-export type QueryDefinitionValue = true | QueryDefinition;
-
-export interface QueryDefinition {
-  [field: string]: QueryDefinitionValue;
+interface LoadedSchema {
+  cacheKey: string;
+  sdl: string;
 }
 
-export interface ParsedResult {
-  operation: {
-    name: string;
-    type: OperationType;
-    definition: QueryDefinition;
-    variable: ParsedVariables;
-  };
-}
+export function loadSchemaSDL(...schemaFiles: string[]): LoadedSchema {
+  const resolvedSchemaFiles =
+    schemaFiles.length > 0 ? resolveInputSchemaPaths(schemaFiles) : resolveDefaultSchemaPaths();
 
-export interface GraphQLJSONPayload {
-  query: string;
-  variables?: ParsedVariables | null;
-}
+  const fileStats = resolvedSchemaFiles.map((schemaPath) => {
+    if (!fs.existsSync(schemaPath)) {
+      throw new Error(`GraphQL schema file not found: ${schemaPath}`);
+    }
 
-export function parseQuery(query: string): ParsedResult {
-  return parseOperation(query, {});
-}
+    return {
+      path: schemaPath,
+      stats: fs.statSync(schemaPath)
+    };
+  });
 
-export function parseJSON(payload: string | GraphQLJSONPayload): ParsedResult {
-  const parsedPayload =
-    typeof payload === "string"
-      ? (JSON.parse(payload) as GraphQLJSONPayload)
-      : payload;
+  const sdl = fileStats
+    .map(({ path: schemaPath }) => fs.readFileSync(schemaPath, "utf8"))
+    .join("\n");
 
-  if (!parsedPayload || typeof parsedPayload.query !== "string") {
-    throw new Error("Invalid payload: expected an object with a query string.");
-  }
-
-  return parseOperation(parsedPayload.query, parsedPayload.variables ?? {});
-}
-
-export function parseOperation(
-  query: string,
-  variables: ParsedVariables = {}
-): ParsedResult {
-  const document = parse(query);
-  const fragments = getFragmentMap(document.definitions);
-
-  const operation = document.definitions.find(
-    (definition): definition is OperationDefinitionNode =>
-      definition.kind === "OperationDefinition"
-  );
-
-  if (!operation) {
-    throw new Error("No GraphQL operation found in query.");
-  }
+  const cacheKey = fileStats
+    .map(({ path: schemaPath, stats }) => `${schemaPath}:${stats.mtimeMs}`)
+    .join("|");
 
   return {
-    operation: {
-      name: operation.name?.value ?? "AnonymousOperation",
-      type: normalizeOperationType(operation.operation),
-      definition: selectionSetToObject(operation.selectionSet, fragments),
-      variable: variables
-    }
+    cacheKey,
+    sdl
   };
 }
 
-function normalizeOperationType(
-  operationType: OperationDefinitionNode["operation"]
-): OperationType {
-  if (operationType === "query" || operationType === "mutation") {
-    return operationType;
+function resolveInputSchemaPaths(schemaFiles: string[]): string[] {
+  return schemaFiles.map((schemaPath) =>
+    path.isAbsolute(schemaPath) ? schemaPath : path.resolve(process.cwd(), schemaPath)
+  );
+}
+
+function resolveDefaultSchemaPaths(): string[] {
+  const schemaPath = resolveSchemaPath();
+  const schemaExtendedPath = resolveSchemaExtendedPath(schemaPath);
+  return [schemaPath, schemaExtendedPath];
+}
+
+function resolveSchemaPath(): string {
+  const envPath = process.env.GRAPHQL_SCHEMA_PATH;
+  const candidates = [envPath, path.resolve(process.cwd(), "schema.graphql")].filter(
+    Boolean
+  ) as string[];
+
+  for (const schemaPath of candidates) {
+    if (fs.existsSync(schemaPath)) {
+      return schemaPath;
+    }
   }
 
   throw new Error(
-    `Unsupported operation type: ${operationType}. Only query and mutation are supported.`
+    "GraphQL schema file not found. Set GRAPHQL_SCHEMA_PATH or place schema.graphql in project root."
   );
 }
 
-function getFragmentMap(
-  definitions: readonly DefinitionNode[]
-): Record<string, FragmentDefinitionNode> {
-  const fragmentMap: Record<string, FragmentDefinitionNode> = {};
+function resolveSchemaExtendedPath(schemaPath: string): string {
+  const envPath = process.env.GRAPHQL_SCHEMA_EXTENDED_PATH;
+  const candidates = [
+    envPath,
+    path.resolve(path.dirname(schemaPath), "schema-extended.graphql"),
+    path.resolve(process.cwd(), "schema-extended.graphql")
+  ].filter(Boolean) as string[];
 
-  for (const definition of definitions) {
-    if (definition.kind === "FragmentDefinition") {
-      fragmentMap[definition.name.value] = definition;
+  for (const extensionPath of candidates) {
+    if (fs.existsSync(extensionPath)) {
+      return extensionPath;
     }
   }
 
-  return fragmentMap;
-}
-
-function selectionSetToObject(
-  selectionSet: SelectionSetNode,
-  fragments: Record<string, FragmentDefinitionNode>
-): QueryDefinition {
-  const definition: QueryDefinition = {};
-
-  for (const selection of selectionSet.selections) {
-    mergeSelection(definition, selection, fragments);
-  }
-
-  return definition;
-}
-
-function mergeSelection(
-  target: QueryDefinition,
-  selection: SelectionNode,
-  fragments: Record<string, FragmentDefinitionNode>
-): void {
-  if (selection.kind === "Field") {
-    const key = selection.alias?.value ?? selection.name.value;
-    const value = selection.selectionSet
-      ? selectionSetToObject(selection.selectionSet, fragments)
-      : true;
-
-    target[key] = mergeValues(target[key], value);
-    return;
-  }
-
-  if (selection.kind === "InlineFragment") {
-    const inlineDefinition = selectionSetToObject(selection.selectionSet, fragments);
-    mergeDefinition(target, inlineDefinition);
-    return;
-  }
-
-  const fragment = fragments[selection.name.value];
-  if (!fragment) {
-    return;
-  }
-
-  const fragmentDefinition = selectionSetToObject(fragment.selectionSet, fragments);
-  mergeDefinition(target, fragmentDefinition);
-}
-
-function mergeDefinition(target: QueryDefinition, source: QueryDefinition): void {
-  for (const [key, value] of Object.entries(source)) {
-    target[key] = mergeValues(target[key], value);
-  }
-}
-
-function mergeValues(
-  current: QueryDefinitionValue | undefined,
-  incoming: QueryDefinitionValue
-): QueryDefinitionValue {
-  if (current === undefined) {
-    return incoming;
-  }
-
-  if (current === true || incoming === true) {
-    return current === true ? incoming : current;
-  }
-
-  const merged: QueryDefinition = { ...current };
-  for (const [key, value] of Object.entries(incoming)) {
-    merged[key] = mergeValues(merged[key], value);
-  }
-  return merged;
+  throw new Error(
+    "GraphQL schema extension file not found. Set GRAPHQL_SCHEMA_EXTENDED_PATH or place schema-extended.graphql alongside schema.graphql."
+  );
 }

@@ -1,7 +1,7 @@
 {
   "name": "@connectingmatrix/graphql-parser",
-  "version": "1.0.0",
-  "description": "Simple TypeScript GraphQL parsing helpers",
+  "version": "2.0.0",
+  "description": "TypeScript GraphQL schema SDL loader and merger",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -13,14 +13,13 @@
   },
   "keywords": [
     "graphql",
-    "parser",
-    "typescript"
+    "schema",
+    "sdl",
+    "typescript",
+    "loader"
   ],
   "author": "connectingmatrix",
   "license": "MIT",
-  "dependencies": {
-    "graphql": "^16.10.0"
-  },
   "devDependencies": {
     "@types/node": "^22.13.13",
     "typescript": "^5.8.2"
