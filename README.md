@@ -8,9 +8,11 @@ TypeScript module for loading and merging GraphQL SDL files.
 yarn add https://github.com/connectingmatrix/graphql-parser.git
 ```
 
-## Exported function
+## Exported functions
 
 - `loadSchemaSDL(...schemaFiles: string[])`
+- `resolver(path: string, operationType: "MUTATION" | "QUERY")`
+- `getCustomResolver(container: unknown, operationType: "MUTATION" | "QUERY")`
 
 ## Output format
 

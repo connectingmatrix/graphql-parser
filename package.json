@@ -20,6 +20,9 @@
   ],
   "author": "connectingmatrix",
   "license": "MIT",
+  "dependencies": {
+    "graphql": "^16.10.0"
+  },
   "devDependencies": {
     "@types/node": "^22.13.13",
     "typescript": "^5.8.2"
