@@ -1,5 +1,4 @@
 import { OperationDefinitionNode, parse } from "graphql";
-import { getFragmentMap, selectionSetToObject } from "./definition-builder";
 import { OperationType, ParsedResult, ParsedVariables } from "./types";
 
 export function parseQuery(query: string): ParsedResult {
@@ -11,7 +10,6 @@ export function parseOperation(
   variables: ParsedVariables = {}
 ): ParsedResult {
   const document = parse(query);
-  const fragments = getFragmentMap(document.definitions);
 
   const operation = document.definitions.find(
     (definition): definition is OperationDefinitionNode =>
@@ -26,7 +24,6 @@ export function parseOperation(
     operation: {
       name: operation.name?.value ?? "AnonymousOperation",
       type: normalizeOperationType(operation.operation),
-      definition: selectionSetToObject(operation.selectionSet, fragments),
       variable: variables
     }
   };

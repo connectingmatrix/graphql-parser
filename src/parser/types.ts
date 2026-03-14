@@ -5,17 +5,10 @@ export enum OperationType {
 
 export type ParsedVariables = Record<string, unknown>;
 
-export type QueryDefinitionValue = true | QueryDefinition;
-
-export interface QueryDefinition {
-  [field: string]: QueryDefinitionValue;
-}
-
 export interface ParsedResult {
   operation: {
     name: string;
     type: OperationType;
-    definition: QueryDefinition;
     variable: ParsedVariables;
   };
 }

@@ -47,11 +47,12 @@ console.log(merged.sdl);
   operation: {
     name: "[OPERATION NAME]",
     type: "query | mutation",
-    definition: { /* query converted into object */ },
     variable: { /* variables object */ }
   }
 }
 ```
+
+`parseJSON` returns `null` when payload JSON is invalid or missing `query`.
 
 ## Default resolution when no files are passed
 
