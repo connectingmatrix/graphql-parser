@@ -11,8 +11,9 @@ yarn add https://github.com/connectingmatrix/graphql-parser.git
 ## Exported functions
 
 - `loadSchemaSDL(...schemaFiles: string[])`
-- `resolver(path: string, operationType: "MUTATION" | "QUERY")`
-- `getCustomResolver(container: unknown, operationType: "MUTATION" | "QUERY")`
+- `GraphQLOperationType` (`GraphQLOperationType.MUTATION | GraphQLOperationType.QUERY`)
+- `resolver(path: string, operationType: GraphQLOperationType)`
+- `getCustomResolver(container: unknown, operationType: GraphQLOperationType)`
 
 ## Output format
 

@@ -1,5 +1,4 @@
-export { getCustomResolver, getCustomResolvers, resolver } from "./resolvers";
-export type { GraphQLOperationType } from "./resolvers";
+export { GraphQLOperationType, getCustomResolver, getCustomResolvers, resolver } from "./resolvers";
 interface LoadedSchema {
     cacheKey: string;
     sdl: string;

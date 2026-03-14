@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolver = exports.getCustomResolvers = exports.getCustomResolver = void 0;
+exports.resolver = exports.getCustomResolvers = exports.getCustomResolver = exports.GraphQLOperationType = void 0;
 exports.loadSchemaSDL = loadSchemaSDL;
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 var resolvers_1 = require("./resolvers");
+Object.defineProperty(exports, "GraphQLOperationType", { enumerable: true, get: function () { return resolvers_1.GraphQLOperationType; } });
 Object.defineProperty(exports, "getCustomResolver", { enumerable: true, get: function () { return resolvers_1.getCustomResolver; } });
 Object.defineProperty(exports, "getCustomResolvers", { enumerable: true, get: function () { return resolvers_1.getCustomResolvers; } });
 Object.defineProperty(exports, "resolver", { enumerable: true, get: function () { return resolvers_1.resolver; } });

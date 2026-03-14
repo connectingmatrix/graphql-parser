@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCustomResolvers = exports.getCustomResolver = exports.resolver = void 0;
+exports.getCustomResolvers = exports.getCustomResolver = exports.resolver = exports.GraphQLOperationType = void 0;
+exports.GraphQLOperationType = {
+    MUTATION: "MUTATION",
+    QUERY: "QUERY"
+};
 const mutations = {};
 const queries = {};
 let closure = null;
@@ -15,7 +19,7 @@ const resolver = (path, operationType) => (target, propertyName) => {
         }
         throw new Error("Resolvers configured improperly");
     };
-    if (operationType === "MUTATION") {
+    if (operationType === exports.GraphQLOperationType.MUTATION) {
         mutations[path] = resolverFn;
     }
     else {
@@ -25,7 +29,9 @@ const resolver = (path, operationType) => (target, propertyName) => {
 exports.resolver = resolver;
 const getCustomResolver = (some, operationType) => {
     closure = some;
-    return operationType === "MUTATION" ? { ...mutations } : { ...queries };
+    return operationType === exports.GraphQLOperationType.MUTATION
+        ? { ...mutations }
+        : { ...queries };
 };
 exports.getCustomResolver = getCustomResolver;
 exports.getCustomResolvers = exports.getCustomResolver;

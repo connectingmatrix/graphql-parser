@@ -1,6 +1,12 @@
 import { GraphQLResolveInfo } from "graphql";
 
-export type GraphQLOperationType = "MUTATION" | "QUERY";
+export const GraphQLOperationType = {
+  MUTATION: "MUTATION",
+  QUERY: "QUERY"
+} as const;
+
+export type GraphQLOperationType =
+  (typeof GraphQLOperationType)[keyof typeof GraphQLOperationType];
 
 type ServiceMethod = (
   root: string,
@@ -39,7 +45,7 @@ export const resolver =
       throw new Error("Resolvers configured improperly");
     };
 
-    if (operationType === "MUTATION") {
+    if (operationType === GraphQLOperationType.MUTATION) {
       mutations[path] = resolverFn;
     } else {
       queries[path] = resolverFn;
@@ -51,7 +57,9 @@ export const getCustomResolver = (
   operationType: GraphQLOperationType
 ) => {
   closure = some as ServiceContainer;
-  return operationType === "MUTATION" ? { ...mutations } : { ...queries };
+  return operationType === GraphQLOperationType.MUTATION
+    ? { ...mutations }
+    : { ...queries };
 };
 
 export const getCustomResolvers = getCustomResolver;

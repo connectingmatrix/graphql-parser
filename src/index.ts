@@ -1,8 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export { getCustomResolver, getCustomResolvers, resolver } from "./resolvers";
-export type { GraphQLOperationType } from "./resolvers";
+export {
+  GraphQLOperationType,
+  getCustomResolver,
+  getCustomResolvers,
+  resolver
+} from "./resolvers";
 
 interface LoadedSchema {
   cacheKey: string;
