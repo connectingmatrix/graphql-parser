@@ -1,10 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loadSchemaSDL = exports.resolver = exports.getCustomResolvers = exports.getCustomResolver = exports.GraphQLOperationType = void 0;
+exports.loadSchemaSDL = exports.parseQuery = exports.parseOperation = exports.parseJSON = exports.OperationType = exports.resolver = exports.getCustomResolvers = exports.getCustomResolver = exports.GraphQLOperationType = void 0;
 var resolvers_1 = require("./resolvers");
 Object.defineProperty(exports, "GraphQLOperationType", { enumerable: true, get: function () { return resolvers_1.GraphQLOperationType; } });
 Object.defineProperty(exports, "getCustomResolver", { enumerable: true, get: function () { return resolvers_1.getCustomResolver; } });
 Object.defineProperty(exports, "getCustomResolvers", { enumerable: true, get: function () { return resolvers_1.getCustomResolvers; } });
 Object.defineProperty(exports, "resolver", { enumerable: true, get: function () { return resolvers_1.resolver; } });
+var parser_1 = require("./parser");
+Object.defineProperty(exports, "OperationType", { enumerable: true, get: function () { return parser_1.OperationType; } });
+Object.defineProperty(exports, "parseJSON", { enumerable: true, get: function () { return parser_1.parseJSON; } });
+Object.defineProperty(exports, "parseOperation", { enumerable: true, get: function () { return parser_1.parseOperation; } });
+Object.defineProperty(exports, "parseQuery", { enumerable: true, get: function () { return parser_1.parseQuery; } });
 var load_schema_sdl_1 = require("./schema/load-schema-sdl");
 Object.defineProperty(exports, "loadSchemaSDL", { enumerable: true, get: function () { return load_schema_sdl_1.loadSchemaSDL; } });

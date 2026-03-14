@@ -14,6 +14,10 @@ yarn add https://github.com/connectingmatrix/graphql-parser.git
 - `GraphQLOperationType` (`GraphQLOperationType.MUTATION | GraphQLOperationType.QUERY`)
 - `resolver(path: string, operationType: GraphQLOperationType)`
 - `getCustomResolver(container: unknown, operationType: GraphQLOperationType)`
+- `OperationType` (`OperationType.QUERY | OperationType.MUTATION`)
+- `parseJSON(payload: string | { query: string; variables?: object })`
+- `parseQuery(query: string)`
+- `parseOperation(query: string, variables?: ParsedVariables)`
 
 ## Output format
 
@@ -32,6 +36,21 @@ import { loadSchemaSDL } from "@connectingmatrix/graphql-parser";
 const merged = loadSchemaSDL("./schema.graphql", "./schema-extended.graphql", "./extra.graphql");
 console.log(merged.cacheKey);
 console.log(merged.sdl);
+```
+
+## Query parser output
+
+`parseJSON` / `parseQuery` / `parseOperation` return:
+
+```ts
+{
+  operation: {
+    name: "[OPERATION NAME]",
+    type: "query | mutation",
+    definition: { /* query converted into object */ },
+    variable: { /* variables object */ }
+  }
+}
 ```
 
 ## Default resolution when no files are passed
