@@ -2,17 +2,17 @@ import { GraphQLResolveInfo } from "graphql";
 
 export const GraphQLOperationType = {
   MUTATION: "MUTATION",
-  QUERY: "QUERY"
+  QUERY: "QUERY",
 } as const;
 
 export type GraphQLOperationType =
   (typeof GraphQLOperationType)[keyof typeof GraphQLOperationType];
 
 type ServiceMethod = (
-  root: string,
+  // root: string,
   payload: unknown,
   context: unknown,
-  info: GraphQLResolveInfo
+  // info: GraphQLResolveInfo
 ) => unknown;
 
 type ServiceContainer = {
@@ -31,7 +31,7 @@ export const resolver =
       root: string,
       payload: unknown,
       context: unknown,
-      info: GraphQLResolveInfo
+      info: GraphQLResolveInfo,
     ) => {
       if (!closure) {
         throw new Error("Resolvers configured improperly");
@@ -39,22 +39,24 @@ export const resolver =
 
       const service = closure.getService(target);
       if (service[propertyName]) {
-        return service[propertyName](root, payload, context, info);
+        return service[propertyName](payload, context);
       }
 
       throw new Error("Resolvers configured improperly");
     };
 
     if (operationType === GraphQLOperationType.MUTATION) {
+      //@ts-ignore
       mutations[path] = resolverFn;
     } else {
+      //@ts-ignore
       queries[path] = resolverFn;
     }
   };
 
 export const getCustomResolver = (
   some: unknown,
-  operationType: GraphQLOperationType
+  operationType: GraphQLOperationType,
 ) => {
   closure = some as ServiceContainer;
   return operationType === GraphQLOperationType.MUTATION
