@@ -2,7 +2,8 @@ export {
   GraphQLOperationType,
   getCustomResolver,
   getCustomResolvers,
-  resolver
+  resolver,
+  resolverFn,
 } from "./resolvers";
 export { OperationType, parseJSON, parseOperation, parseQuery } from "./parser";
 export type { GraphQLJSONPayload, ParsedResult, ParsedVariables } from "./parser";

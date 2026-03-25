@@ -13,6 +13,8 @@ yarn add https://github.com/connectingmatrix/graphql-parser.git
 - `loadSchemaSDL(...schemaFiles: string[])`
 - `GraphQLOperationType` (`GraphQLOperationType.MUTATION | GraphQLOperationType.QUERY`)
 - `resolver(path: string, operationType: GraphQLOperationType)`
+- `resolverFn(path: string, operationType: GraphQLOperationType)`
+- `resolver` can be used on class methods and `resolverFn` is for function-based resolvers.
 - `getCustomResolver(container: unknown, operationType: GraphQLOperationType)`
 - `OperationType` (`OperationType.QUERY | OperationType.MUTATION`)
 - `parseJSON(payload: string | { query: string; variables?: object })`
@@ -36,6 +38,28 @@ import { loadSchemaSDL } from "@connectingmatrix/graphql-parser";
 const merged = loadSchemaSDL("./schema.graphql", "./schema-extended.graphql", "./extra.graphql");
 console.log(merged.cacheKey);
 console.log(merged.sdl);
+```
+
+```ts
+import {
+  resolver,
+  resolverFn,
+  GraphQLOperationType,
+  getCustomResolver,
+} from "@connectingmatrix/graphql-parser";
+
+class UserResolver {
+  @resolver("User.find", GraphQLOperationType.QUERY)
+  find(_payload: unknown, _context: unknown) {
+    return "class based";
+  }
+}
+
+const queryResolvers = getCustomResolver(container, GraphQLOperationType.QUERY);
+
+const queryUser = resolverFn("queryUser", GraphQLOperationType.QUERY)(
+  (_payload: unknown, _context: unknown) => "function based",
+);
 ```
 
 ## Query parser output

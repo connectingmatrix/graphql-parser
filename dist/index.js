@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loadSchemaSDL = exports.parseQuery = exports.parseOperation = exports.parseJSON = exports.OperationType = exports.resolver = exports.getCustomResolvers = exports.getCustomResolver = exports.GraphQLOperationType = void 0;
+exports.loadSchemaSDL = exports.parseQuery = exports.parseOperation = exports.parseJSON = exports.OperationType = exports.resolverFn = exports.resolver = exports.getCustomResolvers = exports.getCustomResolver = exports.GraphQLOperationType = void 0;
 var resolvers_1 = require("./resolvers");
 Object.defineProperty(exports, "GraphQLOperationType", { enumerable: true, get: function () { return resolvers_1.GraphQLOperationType; } });
 Object.defineProperty(exports, "getCustomResolver", { enumerable: true, get: function () { return resolvers_1.getCustomResolver; } });
 Object.defineProperty(exports, "getCustomResolvers", { enumerable: true, get: function () { return resolvers_1.getCustomResolvers; } });
 Object.defineProperty(exports, "resolver", { enumerable: true, get: function () { return resolvers_1.resolver; } });
+Object.defineProperty(exports, "resolverFn", { enumerable: true, get: function () { return resolvers_1.resolverFn; } });
 var parser_1 = require("./parser");
 Object.defineProperty(exports, "OperationType", { enumerable: true, get: function () { return parser_1.OperationType; } });
 Object.defineProperty(exports, "parseJSON", { enumerable: true, get: function () { return parser_1.parseJSON; } });
