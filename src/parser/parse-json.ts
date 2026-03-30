@@ -12,14 +12,14 @@ export function parseJSON(payload: string | GraphQLJSONPayload): ParsedResult | 
       const maybeJSON = JSON.parse(input) as unknown;
 
       if (typeof maybeJSON === "string") {
-        return safeParseOperation(maybeJSON, {});
+        return parseDocument(maybeJSON, {}, null);
       }
 
       if (isGraphQLPayload(maybeJSON)) {
-        return safeParseOperation(maybeJSON.query, maybeJSON.variables ?? {});
+        return parseDocument(maybeJSON.query, maybeJSON.variables ?? {}, maybeJSON.operationName ?? null);
       }
     } catch {
-      return safeParseOperation(input, {});
+      return parseDocument(input, {}, null);
     }
 
     return null;
@@ -29,7 +29,7 @@ export function parseJSON(payload: string | GraphQLJSONPayload): ParsedResult | 
     return null;
   }
 
-  return safeParseOperation(payload.query, payload.variables ?? {});
+  return parseDocument(payload.query, payload.variables ?? {}, payload.operationName ?? null);
 }
 
 function isGraphQLPayload(value: unknown): value is GraphQLJSONPayload {
@@ -41,12 +41,13 @@ function isGraphQLPayload(value: unknown): value is GraphQLJSONPayload {
   return typeof candidate.query === "string";
 }
 
-function safeParseOperation(
+function parseDocument(
   query: string,
-  variables: GraphQLJSONPayload["variables"]
+  variables: GraphQLJSONPayload["variables"],
+  operationName: string | null
 ): ParsedResult | null {
   try {
-    return parseOperation(query, variables ?? {});
+    return parseOperation(query, variables ?? {}, operationName);
   } catch {
     return null;
   }

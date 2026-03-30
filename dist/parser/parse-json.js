@@ -11,21 +11,21 @@ function parseJSON(payload) {
         try {
             const maybeJSON = JSON.parse(input);
             if (typeof maybeJSON === "string") {
-                return safeParseOperation(maybeJSON, {});
+                return parseDocument(maybeJSON, {}, null);
             }
             if (isGraphQLPayload(maybeJSON)) {
-                return safeParseOperation(maybeJSON.query, maybeJSON.variables ?? {});
+                return parseDocument(maybeJSON.query, maybeJSON.variables ?? {}, maybeJSON.operationName ?? null);
             }
         }
         catch {
-            return safeParseOperation(input, {});
+            return parseDocument(input, {}, null);
         }
         return null;
     }
     if (!isGraphQLPayload(payload)) {
         return null;
     }
-    return safeParseOperation(payload.query, payload.variables ?? {});
+    return parseDocument(payload.query, payload.variables ?? {}, payload.operationName ?? null);
 }
 function isGraphQLPayload(value) {
     if (!value || typeof value !== "object") {
@@ -34,9 +34,9 @@ function isGraphQLPayload(value) {
     const candidate = value;
     return typeof candidate.query === "string";
 }
-function safeParseOperation(query, variables) {
+function parseDocument(query, variables, operationName) {
     try {
-        return (0, parse_operation_1.parseOperation)(query, variables ?? {});
+        return (0, parse_operation_1.parseOperation)(query, variables ?? {}, operationName);
     }
     catch {
         return null;
