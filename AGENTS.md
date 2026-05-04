@@ -42,3 +42,7 @@
 - Repeated successful solutions should be promoted into pattern memory.
 - Major architecture or workflow choices should be recorded in decision memory.
 - Local prompts and generated context under `.ai/` should stay aligned with shared brain memory.
+## Live Test Fixture Scope
+
+- All test-created channels, chats, workflows, posts, attachments, and fixture data must live under the `giga-ai-test` parent scope.
+- Matrix, live, and integration tests must reuse or recreate fixture data under `giga-ai-test`; do not create live test data at arbitrary user-tree roots.
