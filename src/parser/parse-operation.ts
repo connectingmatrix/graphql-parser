@@ -1,4 +1,4 @@
-import { Kind, OperationDefinitionNode, parse } from "graphql";
+import { DefinitionNode, Kind, OperationDefinitionNode, parse } from "graphql";
 import { OperationType, ParsedOperationField, ParsedResult, ParsedVariables } from "./types";
 
 export function parseQuery(query: string): ParsedResult {
@@ -12,7 +12,7 @@ export function parseOperation(
 ): ParsedResult {
   const document = parse(query);
   const operation = document.definitions.find(
-    (definition): definition is OperationDefinitionNode =>
+    (definition: DefinitionNode): definition is OperationDefinitionNode =>
       definition.kind === Kind.OPERATION_DEFINITION
       && (!operationName || definition.name?.value === operationName)
   );
