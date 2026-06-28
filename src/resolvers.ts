@@ -66,7 +66,7 @@ export const resolver =
         const service = closure.getService(target);
         const method = service[propertyName];
         if (method) {
-          return method(payload, context);
+          return method.call(service, payload, context);
         }
 
         throw new Error("Resolvers configured improperly");
